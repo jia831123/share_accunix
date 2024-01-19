@@ -77,7 +77,7 @@ The last comment block of each slide will be treated as slide notes. It will be 
     <h2>專案建構套件</h2>
     <p>
     Vite+Vue3 + Typescript +Element Plus +
-   Pinia + Tailwind css</p>
+   Pinia + Tailwind css+Vitest</p>
     <h2>專案緣由</h2>
     <p>
     Accunix 目前系統由 Accunix_develop 與 Accunix_vue3_spa 兩專案組成，其中 Accunix_develop 用於管理 backend 以及 frontend 的 source code，Accunix_vue3_spa 用於管理 frontend 的 source code</p>
@@ -109,7 +109,7 @@ flowchart LR
 ## Accunix_develop 前端挑戰
 
 1. 資料夾結構區分不明確
-2. API呼叫散落在各個頁面，無法統一管理
+2. API呼叫與頁面強耦合：API散落在各個頁面，無法統一管理，且呼叫API邏輯與頁面強耦合
 3. 組件狀態依賴，除錯不易，且狀態追蹤困難
 
 ---
@@ -118,15 +118,46 @@ flowchart LR
 
 - 📁**程式結構和管理**
 - 📥 **API 與 ws 呼叫架構**
-- 📟 **router middleware**
 - 🧑‍💻 **組件狀態**
-- 🕹️ **表單驗證與資料動態檢查**
 - 🔋 **functional programming**
 - 🛠 **Service 化呼叫** -
 - 🪬 **專案中的設計模式** -
-- 🖥️ **專案 CI** -
+- 🖥️ **專案程式碼品質** -
 
 ---
+
+## <img w-80  bg-white src='https://miro.medium.com/v2/resize:fit:720/format:webp/0*CSv33QMFR0YL0UO-.png'></img>
+
+1. Single Responsibility Principle
+   > A class should have only one reason to change.
+2. Open Close Principle
+   > Software entities (classes, modules, functions, etc.) should be open for extension, but closed for modification.
+3. Liskov Substitution Principle
+4. Interface Segregation Principle
+5. Dependency Inversion Principle
+
+---
+
+<div text-4xl m-auto h-full flex items-center>
+<div>📁程式結構和管理</div>
+</div>
+---
+
+📁**程式結構和管理**
+
+挑戰：資料夾結構區分不明確
+
+<div>
+    <img w-80 h-80 src="/p1.png"></img>
+</div>
+
+- admin 代表 權限業務相關功能下的頁面組件
+- common 代表 程式通用組件 還是常用功能業務相關功能的頁面組件?!
+- header 代表 頁面組件 還是 頁面業務邏輯的頁面組件?!
+
+---
+
+📁**程式結構和管理**
 
 ## 一、 專案前端 資料夾結構
 
@@ -140,7 +171,7 @@ flowchart LR
 ├── router # router
 ├── service # service
 | ├──api # api 資料夾，每隻檔案對應一支api  
-| ├──store # vuex store
+| ├──store # pinia store
 | └──web-socket # webSocket 相關服務放置裡頭
 |
 ├── style # css 用
@@ -153,6 +184,8 @@ flowchart LR
 ```
 
 ---
+
+📁**程式結構和管理**
 
 ## 二、views 資料夾下配置
 
@@ -176,6 +209,8 @@ url
 
 ---
 
+📁**程式結構和管理**
+
 ```markdown
 ├── views
 | └──Login  
@@ -190,7 +225,330 @@ url
 
 1. 維護容易:找尋目標頁面僅根據url 就能在對應資料夾下找到對應的組件
 2. 組件與邏輯權限職責清晰:該資料夾下component 僅服務該層級中的所有組件,同理composables 僅服务該層級中的所有組件
-3. 心智負擔低:views層級底下資料夾邏輯一致，擴充或抽離邏輯組件容易
+3. 心智負擔低:Views層級底下資料夾邏輯一致，擴充或抽離邏輯組件容易 ，大寫開頭代表象徵頁面組件，小寫則為開發用組件
+
+---
+
+<div text-4xl m-auto h-full flex items-center>
+<div>📥 API 與 WebSocket 呼叫架構</div>
+</div>
+
+---
+
+📥 **API 與 ws 呼叫架構**
+
+挑戰：API呼叫與頁面強耦合
+
+API呼叫散落在各個頁面，無法統一管理，且呼叫API邏輯與頁面強耦合
+
+```js {all|4}
+    //Views/Sms.vue
+    storeOrUpdate() {
+      let apiParams = { 'username': this.username, 'password': this.password }
+      axiosConfig.post(`${this.apiPathBase}/smsStoreOrUpdate`, apiParams)
+      .then((resp) => {
+        //
+        //
+      }).catch((error) => {
+        //...
+      })
+```
+
+- 頁面組件要處理 api try catch
+- 若api要進行檢查，就要寫在頁面組件
+- 若api url 有進行修改，要到頁面組件去修改，
+- 若同時以多個頁面用到，需要修改用到地方
+
+違反 單一職責原則，頁面組件應當專注於該頁面的業務邏輯，API關注如何使用，不該知道API處理細節
+
+---
+
+📥 **API 與 ws 呼叫架構**
+
+```markdown {all|2-4|5|6-10}
+├── service # service
+| ├──api # api 資料夾，每隻檔案對應一支api  
+|-----├──index.ts
+|-----└──descriptor.ts //api 驗證文件
+| ├──store # pinia store
+| └──web-socket # webSocket 相關服務放置裡頭
+|-----├──index.ts
+|-----└──descriptor.ts //api 驗證文件
+```
+
+---
+
+📥 **API 呼叫架構**
+
+<div grid grid-cols-2>
+<div>
+
+```mermaid
+classDiagram
+    useRequest <|-- useApiBase
+    useApiBase <|-- useApi
+    useApi <|-- views Component
+```
+
+</div>
+<div>
+<h3>
+1.useRequest
+</h3>
+<p>API呼叫方法，AXIOS 定義處</p>
+<h3>
+2.useApiBase
+</h3>
+<p>API抽象高階函數</p>
+<h3>
+3.useApi
+</h3>
+<p>API實作</p>
+<h3>
+4.ViewsComponent
+</h3>
+<p>呼叫處</p>
+</div>
+
+</div>
+
+---
+
+📥 **API 呼叫架構**
+
+# useRequest 定義call API 的方法
+
+置換方法處，可換成ajax 或 原生fetch
+
+```ts {all|11}
+export const useRequest = async <R extends {}, B extends {} = {}>({
+  method,
+  url,
+  data,
+  config,
+}) => {
+  const res = await Axios.request<R>({
+    method,
+    url,
+    data,
+    baseURL: import.meta.env.VITE_API_BASE_URL,
+    validateStatus: function (status) {
+      return (status >= 200 && status < 300) || status === 422
+    },
+    headers: {
+      Authorization: `Bearer ${store.session.get('token')}`,
+    },
+    withCredentials: true,
+    ...config,
+  })
+  if (res.status === 422) {
+    return res.data
+  }
+}
+```
+
+---
+
+📥 **API 呼叫架構**
+
+# useApiBase API抽象高階函數
+
+```ts {all|1|2|4-8|10-14}
+export const useApiBase = <Req, Res>() => {
+  //...實作內容，狀態變更與呼叫useRequest，並將try catch 限制在理頭處理
+  return {
+    //狀態
+    isLoading,
+    isError,
+    isSuccess: computed(() => !isError.value),
+    resData,
+    //高階函數
+    requestPostBase,
+    requestGetBase,
+    requestDeleteBase,
+    requestPatchBase,
+    requestPutBase,
+  }
+}
+```
+
+---
+
+📥 **API 呼叫架構**
+
+# useApiBase API抽象高階函數
+
+```ts {all|2-5|10-19}
+const requestBase = (
+  type: Method,
+  url: string,
+  data?: Req,
+  config?: Config
+) => {
+  /// 呼叫useRequest與狀態變更實作
+}
+
+const requestPostBase = (url: string, data?: Req, config?: Config) =>
+  requestBase('POST', url, data, config)
+const requestGetBase = (url: string, params?: Req, config?: Config) =>
+  requestBase('GET', url, params, config)
+const requestDeleteBase = (url: string, data?: Req, config?: Config) =>
+  requestBase('DELETE', url, data, config)
+const requestPatchBase = (url: string, data?: Req, config?: Config) =>
+  requestBase('PATCH', url, data, config)
+const requestPutBase = (url: string, data?: Req, config?: Config) =>
+  requestBase('PUT', url, data, config)
+```
+
+---
+
+📥 **API 架構**
+
+# API實作
+
+useAccount.ts
+
+```ts {all|2-3|4-17|10-17}
+export default () => {
+  const { isLoading, isError, botStore, resData, requestGetBase, isSuccess } =
+    useApiBase<AssignCountReq, AssignCountRes>()
+  const fetchData = (chatroomStatus: ChatroomStatusEnum) => {
+    const url = URL(botStore.botApiPath)
+    return requestGetBase(
+      url,
+      {
+        chatroomStatus,
+      },
+      {
+        validate: {
+          //API req res資料動態檢查
+          reqDescriptor: descriptor.reqDescriptor(),
+          resDescriptor: descriptor.resDescriptor(),
+        },
+      }
+    )
+  }
+}
+```
+
+---
+
+📥 **API呼叫架構**
+
+PM大大👩
+
+友善的 前端RD 🙉
+
+🙉(開發功能中)
+
+👩：出事了 系統壞掉了，怎麼資料沒有顯示出來
+
+🙉：假的 怎麼可能 程式碼沒動吧 我去檢查一下console
+
+//15分鐘後
+
+🙉：這隻api好像少給一個欄位，另外一個欄位應該給布林怎麼變成數字了，應該是後端api有變更
+
+🙉：PM ，後端好像資料有問題
+
+👩：真的假的 那我去問問後端
+
+🙉：我剛剛前端寫到一半，我在寫什麼
+
+---
+
+📥 **API呼叫架構**
+
+有了動態資料驗證後
+🙉(開發功能中)
+
+👩：出事了 系統壞掉了，怎麼資料沒有顯示出來
+
+🙉：假的 怎麼可能 程式碼沒動吧 我去檢查一下console
+
+//2秒打開後
+<img src='/log.png'></img>
+
+🙉：原來，這隻api好像少給一個欄位，另外一個欄位應該給布林怎麼變成數字了，應該是後端api有變更
+
+🙉：PM ，後端好像資料有問題
+
+👩：真的假的 那我去問問後端
+
+🙉：ok
+
+真棒 更快的<span line-through>甩鍋</span> 釐清問題
+
+---
+
+📥 **API呼叫架構**
+
+async-validator
+Element plus Form 預設驗證方式
+
+```js
+const descriptor = {
+  name: {
+    type: 'string',
+    required: true,
+    validator: (rule, value) => value === 'muji',
+  },
+  age: {
+    type: 'number',
+    asyncValidator: (rule, value) => {
+      return new Promise((resolve, reject) => {
+        if (value < 18) {
+          reject('too young') // reject with error message
+        } else {
+          resolve()
+        }
+      })
+    },
+  },
+}
+```
+
+驗證資料型別，資料格式，資料長度，資料是否為空，資料是否符合特定規則等等
+
+---
+
+📥 **API呼叫架構**
+
+# API使用
+
+useAccount.ts
+
+```ts {all|1-3|5-12}
+import useAssignCount from '@/service/api/botFeature/common/Chatroom/useAssignCount'
+const { fetchData: fetchAssignCount, isError: isFetchAssignCountError } =
+  useAssignCount()
+//...
+
+const handleFetchAssignCount = async () => {
+  const res = await fetchAssignCount(props.chatroomStatus)
+  if (isFetchAssignCountError.value) return
+  total.value = res.total
+  unAssign.value = res.unAssign
+  assignSelf.value = res.assignSelf
+  return total.value
+}
+```
+
+---
+
+```markdown
+├── service # service
+| ├──api # api 資料夾，每隻檔案對應一支api  
+|-----├──index.ts //api 主文件
+|-----├──type.ts //api 靜態驗證文件，放ts 定義文件
+|-----└──descriptor.ts //api 動態驗證文件
+```
+
+API架構優勢
+
+1. API 與 頁面解耦，頁面不需要執行try catch，不需要知道url 與 api使用方式等細節
+2. API動態驗證 ，ts只有靜態驗證，加入動態驗證補足
+3. 驗證 動態驗證與靜態驗證皆在該資料夾中，維護容易
 
 ---
 

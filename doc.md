@@ -16,4 +16,4 @@
 
 # 專案中的設計模式
 
-# 專案 CI
+# 專案程式碼品質 (pre commit and typescript and unit test)
