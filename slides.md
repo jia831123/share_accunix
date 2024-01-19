@@ -1,5 +1,5 @@
 ---
-theme: seriph
+theme: default
 background: https://source.unsplash.com/collection/94734566/1920x1080
 class: text-center
 highlighter: shikiji
@@ -12,17 +12,17 @@ info: |
 drawings:
   persist: false
 transition: slide-left
-title: Welcome to Slidev
+title: AccuNix 前端開發探索
 mdc: true
 ---
 
-# Accunix 前端開發探索：挑戰、解決方案與優化策略
+# AccuNix 前端開發探索：
 
-Presentation slides for developers
+## 挑戰、解決方案與優化策略
 
 <div class="pt-12">
   <span @click="$slidev.nav.next" class="px-2 py-1 rounded cursor-pointer" hover="bg-white bg-opacity-10">
-    Press Space for next page <carbon:arrow-right class="inline"/>
+    Next <carbon:arrow-right class="inline"/>
   </span>
 </div>
 
@@ -39,6 +39,158 @@ Presentation slides for developers
 <!--
 The last comment block of each slide will be treated as slide notes. It will be visible and editable in Presenter Mode along with the slide. [Read more in the docs](https://sli.dev/guide/syntax.html#notes)
 -->
+
+---
+
+<div flex>
+  <div>
+    <p align="center" >
+      <img width="300" src="https://accucms.accunix.net/img/logo-default.png">
+    </p>
+    <p flex>
+      <span>
+      <a href="https://github.com/vuejs/core">
+          <img src="https://img.shields.io/badge/vue-3.0.5-brightgreen.svg" alt="vue">
+        </a>
+      </span>
+      <span>
+        <a href="https://github.com/element-plus/element-plus">
+          <img src="https://img.shields.io/badge/element--plus-2.2.5-brightgreen.svg" alt="element-plus">
+        </a>
+      </span>
+      <span>
+        <a href="https://github.com/tailwindlabs/tailwindcss">
+          <img src="https://img.shields.io/badge/tailwind-2.2.17-brightgreen.svg?style=flat" alt="tailwindcss">
+        </a>
+      </span>
+      <span>
+      <a href="https://github.com/tailwindlabs/tailwindcss">
+          <img src="https://img.shields.io/badge/vite-2.4.4-brightgreen.svg?style=flat" alt="vite Welcome">
+        </a>
+      </span>
+    </p>
+  </div>
+</div>
+<div  grid grid-cols-2>
+  <div>
+    <h3>Accunix_vue3_spa</h3>
+    <h2>專案建構套件</h2>
+    <p>
+    Vite+Vue3 + Typescript +Element Plus +
+   Pinia + Tailwind css</p>
+    <h2>專案緣由</h2>
+    <p>
+    Accunix 目前系統由 Accunix_develop 與 Accunix_vue3_spa 兩專案組成，其中 Accunix_develop 用於管理 backend 以及 frontend 的 source code，Accunix_vue3_spa 用於管理 frontend 的 source code</p>
+  </div>
+  <div >
+    <img w-80 h-80 src="/pack_1.png"></img>
+  </div>
+
+</div>
+
+---
+
+## 目前專案
+
+1. Accunix_develop:
+   php laravel + Vue2 (MPA)
+   (Backend+Frontend)
+2. Accunix_vue3_spa:
+   Vue3 (SPA)
+   (Frontend)
+
+```mermaid
+flowchart LR
+    Accunix_develop-->|frontend code|Accunix_vue3_spa
+```
+
+將逐漸將就有前端頁面由Accunix_develop 轉移至 Accunix_vue3_spa，新功能直接在Accunix_vue3_spa進行開發
+
+## Accunix_develop 前端挑戰
+
+1. 資料夾結構區分不明確
+2. API呼叫散落在各個頁面，無法統一管理
+3. 組件狀態依賴，除錯不易，且狀態追蹤困難
+
+---
+
+## 目錄
+
+- 📁**程式結構和管理**
+- 📥 **API 與 ws 呼叫架構**
+- 📟 **router middleware**
+- 🧑‍💻 **組件狀態**
+- 🕹️ **表單驗證與資料動態檢查**
+- 🔋 **functional programming**
+- 🛠 **Service 化呼叫** -
+- 🪬 **專案中的設計模式** -
+- 🖥️ **專案 CI** -
+
+---
+
+## 一、 專案前端 資料夾結構
+
+```markdown {all|2|8-11|16-18|all} twoslash
+├── assets # 靜態檔案
+├── components # component，與業務或資料層面無耦合之組件
+├── hook # 共用hook
+├── lib # lib
+├── locales # i18用
+├── providers # 依賴注入用
+├── router # router
+├── service # service
+| ├──api # api 資料夾，每隻檔案對應一支api  
+| ├──store # vuex store
+| └──web-socket # webSocket 相關服務放置裡頭
+|
+├── style # css 用
+├── router # router
+├── type # router
+├── views # 頁面views
+| ├──comonents #根共用組件，與業務資料緊耦合之組件
+| ├──....  
+├.....
+```
+
+---
+
+## 二、views 資料夾下配置
+
+view 資料夾下配置
+
+> 設計理念核心：看到url，就能找到檔案<br>
+> 在views 底下 代表頁面資料夾以大寫開頭，其餘components 與 composable 皆以小寫開頭
+
+### (一)範例1 登入頁需要修改
+
+url
+
+> https://accucms.accunix.net/login
+
+目標資料夾
+
+> views/Login/index.vue
+
+共用組件 components
+共用邏輯 composables
+
+---
+
+```markdown
+├── views
+| └──Login  
+|------├──index.vue //(頁面)組件主要邏輯
+|------├──components //(頁面)組件資料夾
+|------------├──components //(組件)間共用組件資料夾
+|------------└──composables //(組件)間共用邏輯資料夾
+|------└──composables //(頁面)邏輯拆分資料夾
+```
+
+資料夾架構優勢
+
+1. 維護容易:找尋目標頁面僅根據url 就能在對應資料夾下找到對應的組件
+2. 組件與邏輯權限職責清晰:該資料夾下component 僅服務該層級中的所有組件,同理composables 僅服务該層級中的所有組件
+3. 心智負擔低:views層級底下資料夾邏輯一致，擴充或抽離邏輯組件容易
 
 ---
 
