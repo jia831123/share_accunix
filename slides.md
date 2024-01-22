@@ -117,12 +117,10 @@ flowchart LR
 ## 目錄
 
 - 📁**程式結構和管理**
-- 📥 **API 與 ws 呼叫架構**
-- 🧑‍💻 **組件狀態**
 - ⚔️ **FP 與 高階函數**
-- 🛠 **Service 化呼叫** -
-- 🪬 **專案中的設計模式** -
-- 🖥️ **專案程式碼品質** -
+- 📥 **API 呼叫架構**
+- 🪬 **專案中的設計模式**
+- 🖥️ **專案程式碼品質**
 
 ---
 
@@ -247,6 +245,8 @@ url
 3. Higher-Order-Function:函數可當作參數傳遞給其他函數，也能被返回為結果。'使函數更靈活的組合重用'
 4. Recursion:使用遞歸作為主要流程結構，而非遞迴
 
+> 前端程式通常是由一連串業務組成，所以能以高階函數來定義業務，可以將各種業務包裝成函示，並依據不同的情境去進行組合
+
 ---
 
 ### ⚔️ **FP 與 高階函數**
@@ -289,7 +289,7 @@ const { fetchUsers, isFetchUserLoading } = useUsers()
 const { fetchList, isFetchUserLoading } = useList()
 const loadingWith = promiseSurround(
   (isLoading.value = true),
-  (isLoading = false)
+  (isLoading.value = false)
 )
 
 const handleCountBtn = loadingWith(fetchCount)
@@ -368,7 +368,7 @@ Service 化
 
 ---
 
-📥 **API 與 ws 呼叫架構**
+📥 **API 呼叫架構**
 
 🧨挑戰：API呼叫與頁面強耦合
 
@@ -396,7 +396,7 @@ API呼叫散落在各個頁面，無法統一管理，且呼叫API邏輯與頁�
 
 ---
 
-📥 **API 與 ws 呼叫架構**
+📥 **API 呼叫架構**
 
 ```markdown {all|2-4|5|6-10}
 ├── service # service
@@ -669,6 +669,8 @@ const handleFetchAssignCount = async () => {
 
 ---
 
+📥 **API呼叫架構**
+
 ```markdown
 ├── service # service
 | ├──api # api 資料夾，每隻檔案對應一支api  
@@ -685,410 +687,247 @@ API架構優勢
 
 ---
 
-## transition: fade-out
-
-# What is Slidev?
-
-Slidev is a slides maker and presenter designed for developers, consist of the following features
-
-- 📝 **Text-based** - focus on the content with Markdown, and then style them later
-- 🎨 **Themable** - theme can be shared and used with npm packages
-- 🧑‍💻 **Developer Friendly** - code highlighting, live coding with autocompletion
-- 🤹 **Interactive** - embedding Vue components to enhance your expressions
-- 🎥 **Recording** - built-in recording and camera view
-- 📤 **Portable** - export into PDF, PNGs, or even a hostable SPA
-- 🛠 **Hackable** - anything possible on a webpage
-
-<br>
-<br>
-
-Read more about [Why Slidev?](https://sli.dev/guide/why)
-
-<!--
-You can have `style` tag in markdown to override the style for the current page.
-Learn more: https://sli.dev/guide/syntax#embedded-styles
--->
-
-<style>
-h1 {
-  background-color: #2B90B6;
-  background-image: linear-gradient(45deg, #4EC5D4 10%, #146b8c 20%);
-  background-size: 100%;
-  -webkit-background-clip: text;
-  -moz-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  -moz-text-fill-color: transparent;
-}
-</style>
-
-<!--
-Here is another comment.
--->
-
----
-
-## layout: default
-
-# Table of contents
-
-```html
-<Toc minDepth="1" maxDepth="1"></Toc>
-```
-
-<Toc maxDepth="1"></Toc>
-
----
-
-transition: slide-up
-level: 2
-
----
-
-# Navigation
-
-Hover on the bottom-left corner to see the navigation's controls panel, [learn more](https://sli.dev/guide/navigation.html)
-
-## Keyboard Shortcuts
-
-|                                                    |                             |
-| -------------------------------------------------- | --------------------------- |
-| <kbd>right</kbd> / <kbd>space</kbd>                | next animation or slide     |
-| <kbd>left</kbd> / <kbd>shift</kbd><kbd>space</kbd> | previous animation or slide |
-| <kbd>up</kbd>                                      | previous slide              |
-| <kbd>down</kbd>                                    | next slide                  |
-
-<!-- https://sli.dev/guide/animations.html#click-animations -->
-
-<img
-  v-click
-  class="absolute -bottom-9 -left-7 w-80 opacity-50"
-  src="https://sli.dev/assets/arrow-bottom-left.svg"
-  alt=""
-/>
-
-<p v-after class="absolute bottom-23 left-45 opacity-30 transform -rotate-10">Here!</p>
-
----
-
-layout: image-right
-image: https://source.unsplash.com/collection/94734566/1920x1080
-
----
-
-# Code
-
-Use code snippets and get the highlighting directly, and even types hover![^1]
-
-```ts {all|5|1-6|9|all} twoslash
-// TwoSlash enables TypeScript hover information and errors in markdown code blocks
-// Learn more at https://www.typescriptlang.org/dev/twoslash/
-function getUser(id: number): User {
-  return undefined as any
-}
-function saveUser(id: number, user: User) {
-  // ...
-}
-// ---cut---
-interface User {
-  id: number
-  firstName: string
-  lastName: string
-  role: string
-  // ^?
-}
-
-function updateUser(id: number, update: User) {
-  const user = getUser(id)
-  const newUser = { ...user, ...update }
-  saveUser(id, newUser)
-}
-```
-
-<arrow v-click="[3, 4]" x1="400" y1="420" x2="230" y2="330" color="#564" width="3" arrowSize="1" />
-
-[^1]: [Learn More](https://sli.dev/guide/syntax.html#line-highlighting)
-
-<style>
-.footnotes-sep {
-  @apply mt-20 opacity-10;
-}
-.footnotes {
-  @apply text-sm opacity-75;
-}
-.footnote-backref {
-  display: none;
-}
-</style>
-
----
-
-# Components
-
-<div grid="~ cols-2 gap-4">
-<div>
-
-You can use Vue components directly inside your slides.
-
-We have provided a few built-in components like `<Tweet/>` and `<Youtube/>` that you can use directly. And adding your custom components is also super easy.
-
-```html
-<Counter :count="10" />
-```
-
-<!-- ./components/Counter.vue -->
-<Counter :count="10" m="t-4" />
-
-Check out [the guides](https://sli.dev/builtin/components.html) for more.
-
-</div>
-<div>
-
-```html
-<Tweet id="1390115482657726468" />
-```
-
-<Tweet id="1390115482657726468" scale="0.65" />
-
-</div>
+<div text-4xl m-auto h-full flex items-center>
+<div>🪬專案中的設計模式</div>
 </div>
 
-<!--
-Presenter note with **bold**, *italic*, and ~~striked~~ text.
+---
 
-Also, HTML elements are valid:
-<div class="flex w-full">
-  <span style="flex-grow: 1;">Left content</span>
-  <span>Right content</span>
-</div>
--->
+🪬 **專案中的設計模式**
+
+1. 針對擴充時 if else 的替代方式-策略模式
+
+2. 針對 同一組方法與變數，依據當下狀態不同，而有不同行為 - 狀態模式
 
 ---
 
-## class: px-20
+🪬 **專案中的設計模式**
 
-# Themes
+> 策略模式是一種設計模式，它定義了一組算法，並將每一個算法封裝起來，使它們可以相互替換。這樣程序在運行時可以根據需要來選擇不同的算法。策略模式使得算法可以獨立於使用它的客戶而變化。 — chat GPT
 
-Slidev comes with powerful theming support. Themes can provide styles, layouts, components, or even configurations for tools. Switching between themes by just **one edit** in your frontmatter:
+策略模式我認為最重要的部分，就是算法可獨立於他的客戶。獨立的好處代表一但算法有更新，算法有新增，算法有刪除，程式碼部分僅更新算法寫法就好，客戶都不需要進行修改。這樣的好處在於好擴充與好維護。
 
-<div grid="~ cols-2 gap-2" m="t-2">
-
-```yaml
----
-theme: default
----
-```
-
-```yaml
----
-theme: seriph
----
-```
-
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-default/01.png?raw=true" alt="">
-
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-seriph/01.png?raw=true" alt="">
-
-</div>
-
-Read more about [How to use a theme](https://sli.dev/themes/use.html) and
-check out the [Awesome Themes Gallery](https://sli.dev/themes/gallery.html).
-
----
-
-## preload: false
-
-# Animations
-
-Animations are powered by [@vueuse/motion](https://motion.vueuse.org/).
-
-```html
-<div v-motion :initial="{ x: -80 }" :enter="{ x: 0 }">Slidev</div>
-```
-
-<div class="w-60 relative mt-6">
-  <div class="relative w-40 h-40">
-    <img
-      v-motion
-      :initial="{ x: 800, y: -100, scale: 1.5, rotate: -50 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-square.png"
-      alt=""
-    />
-    <img
-      v-motion
-      :initial="{ y: 500, x: -100, scale: 2 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-circle.png"
-      alt=""
-    />
-    <img
-      v-motion
-      :initial="{ x: 600, y: 400, scale: 2, rotate: 100 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-triangle.png"
-      alt=""
-    />
-  </div>
-
-  <div
-    class="text-5xl absolute top-14 left-40 text-[#2B90B6] -z-1"
-    v-motion
-    :initial="{ x: -80, opacity: 0}"
-    :enter="{ x: 0, opacity: 1, transition: { delay: 2000, duration: 1000 } }">
-    Slidev
-  </div>
-</div>
-
-<!-- vue script setup scripts can be directly used in markdown, and will only affects current page -->
-<script setup lang="ts">
-const final = {
-  x: 0,
-  y: 0,
-  rotate: 0,
-  scale: 1,
-  transition: {
-    type: 'spring',
-    damping: 10,
-    stiffness: 20,
-    mass: 2
+```ts
+const getMessage = (type: string) => {
+  //一些額外業務邏輯
+  if (type === 'message') {
+    return {
+      type: 'message',
+      text: '',
+    }
   }
+  if (type === 'image') {
+    return {
+      type: 'image',
+      url: '',
+    }
+  }
+  if (type === 'video') {
+    return {
+      type: 'video',
+      url: '',
+    }
+  }
+}
+```
+
+---
+
+🪬 **專案中的設計模式**
+
+PM大大👩 :工程師要多一個訊息格式喔
+
+🙉 :好啊 那就多加一個if else
+
+上版兩個月後...
+
+PM大大👩 :怎麼舊的訊息壞掉了
+
+🙉 :怎麼上次改多了個功能，其他訊息格式都出問題了
+
+🙉：喔不 沒想到改了 舊的就壞了
+
+🙉：違反開放封閉了
+
+---
+
+🪬 **專案中的設計模式**
+
+此時運用策略模式精神，將算法獨立於客戶端，此時的客戶端就是getMessage此函數。
+
+```ts
+const strategies={
+  message:{
+    type:'message'
+    text:''
+  },
+  image:{
+    type:'image'
+    url:''
+  },
+  video:{
+    type:'video'
+    url:''
+  },
+}
+const getMessage=(type:string)=>{
+  //一些額外業務邏輯
+  return strategies[type]
+}
+```
+
+---
+
+🪬 **專案中的設計模式**
+
+此時就將策略與客戶(getMessage)隔離出來，此時策略的實作與客戶以不相干，客戶僅專注於調用，而實作交予策略決定，此方法的好處
+
+1. 符合單一職責原則：客戶僅專注於調用策略，策略的新增刪除修改僅在策略實踐。
+2. 符合開放封閉原則：無須對客戶端進行修改就能新增策略。
+
+---
+
+🪬 **專案中的設計模式**
+
+```vue
+<template>
+  <Message
+    v-if="type === 'message'"
+    @click="handleMessageClick"
+    :text="_modelValue.text"
+  />
+  <Video
+    v-else-if="type === video"
+    @click="handleVideoClick"
+    :url="_modelValue.url"
+  />
+  <Image
+    v-else-if="type === Image"
+    @click="handleImageClick"
+    :url="_modelValue.url"
+  />
+</template>
+```
+
+---
+
+🪬 **專案中的設計模式**
+
+```vue
+<script setup>
+ 	const props=defineProps({
+     modelVlaue:{
+       type:Object as PropType<ModelValue>
+     }
+   })
+   const emit = defineEmits(['update:modelValue'])
+   const _modelValue=useModelValue(props,'modelVlaue',emit)
+const handleMessageClick=()=>console.log('message')
+const handleVideoClick=()=>console.log('video')
+const handleImageClick=()=>console.log('image')
+</script>
+<style scope />
+```
+
+此寫法的壞處在於，只要有新增訊息類別，模板要改，相對應的策略要要新增於script中，因此也可利用策略並搭被is v-bind on關鍵字搭配策略包裝起來。
+
+---
+
+🪬 **專案中的設計模式**
+
+```vue
+<template>
+	<component :is="componentMap[modelValue.type]"
+               v-bind="componentProps[modelValue.type]"
+               on="componentEvents[modelValue.type]">
+</template>
+```
+
+---
+
+🪬 專案中的設計模式
+
+```vue {all|2-5|6-10|11-15|16-20}
+<script setup>
+const handleMessageClick = () => console.log('message')
+const handleVideoClick = () => console.log('video')
+const handleImageClick = () => console.log('image')
+const componentMap = {
+  message: Message,
+  Image: Image,
+  vide: Video,
+}
+const componentProps = {
+  message: { text: props.modelValue.text },
+  Image: { url: props.modelValue.url },
+  vide: { text: props.modelValue.url },
+}
+const componentEvents = {
+  message: { click: handleMessageClick },
+  Image: { click: handleImageClick },
+  vide: { click: handleVideoClick },
 }
 </script>
+<style scope />
+```
 
-<div
-  v-motion
-  :initial="{ x:35, y: 40, opacity: 0}"
-  :enter="{ y: 0, opacity: 1, transition: { delay: 3500 } }">
+1. 將邏輯從模板抽離:簡化模板程式
+2. 將策略與模板隔離:可將策略組件映射包在componentMap中，將Prop映射裝在componentProps中，將事件映射包裝在componentEvents中。
 
-[Learn More](https://sli.dev/guide/animations.html#motion)
+---
 
+<div text-4xl m-auto h-full flex items-center>
+<div>🖥️ 專案程式碼品質</div>
 </div>
 
 ---
 
-# LaTeX
+🖥️ 專案程式碼品質
 
-LaTeX is supported out-of-box powered by [KaTeX](https://katex.org/).
-
-<br>
-
-Inline $\sqrt{3x-1}+(1+x)^2$
-
-Block
-
-$$
-{1|3|all}
-\begin{array}{c}
-
-\nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} &
-= \frac{4\pi}{c}\vec{\mathbf{j}}    \nabla \cdot \vec{\mathbf{E}} & = 4 \pi \rho \\
-
-\nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t} & = \vec{\mathbf{0}} \\
-
-\nabla \cdot \vec{\mathbf{B}} & = 0
-
-\end{array}
-$$
-
-<br>
-
-[Learn more](https://sli.dev/guide/syntax#latex)
-
----
-
-# Diagrams
-
-You can create diagrams / graphs from textual descriptions, directly in your Markdown.
-
-<div class="grid grid-cols-4 gap-5 pt-4 -mb-6">
-
-```mermaid {scale: 0.5, alt: 'A simple sequence diagram'}
-sequenceDiagram
-    Alice->John: Hello John, how are you?
-    Note over Alice,John: A typical interaction
-```
-
-```mermaid {theme: 'neutral', scale: 0.8}
-graph TD
-B[Text] --> C{Decision}
-C -->|One| D[Result 1]
-C -->|Two| E[Result 2]
-```
+<div grid grid-cols-2>
+<div>
 
 ```mermaid
-mindmap
-  root((mindmap))
-    Origins
-      Long history
-      ::icon(fa fa-book)
-      Popularisation
-        British popular psychology author Tony Buzan
-    Research
-      On effectivness<br/>and features
-      On Automatic creation
-        Uses
-            Creative techniques
-            Strategic planning
-            Argument mapping
-    Tools
-      Pen and paper
-      Mermaid
+flowchart TD
+    A[develop] -->|pre commit-eslint| B(commit)
+    B -->|push| C(merge request)
+    C -->|unit test & typescript check| D[merge]
+
 ```
 
-```plantuml {scale: 0.7}
-@startuml
+</div>
+<div>
+在mr前，由程式進行程式碼風格，格式，單元測試等，等成功後最後一道關卡為Code Review
 
-package "Some Group" {
-  HTTP - [First Component]
-  [Another Component]
-}
+```markdown
+1. commit
+   pre commit
 
-node "Other Groups" {
-  FTP - [Second Component]
-  [First Component] --> FTP
-}
+- eslint (程式碼風格，可否使用隱性轉換，程式碼不能有debugger...)
+- prettier (程式碼格式化，縮排幾格 單引號雙引號...)
 
-cloud {
-  [Example 1]
-}
+2. push
 
-database "MySql" {
-  folder "This is my folder" {
-    [Folder 3]
-  }
-  frame "Foo" {
-    [Frame 4]
-  }
-}
+- typescript check (ts 檢查檢查型別)
+- unit test (單元測試)
 
-[Another Component] --> [Example 1]
-[Example 1] --> [Folder 3]
-[Folder 3] --> [Frame 4]
+3. mr
 
-@enduml
+- Code Review (代碼審查)
 ```
 
 </div>
 
-[Learn More](https://sli.dev/guide/syntax.html#diagrams)
+</div>
 
 ---
 
-src: ./pages/multiple-entries.md
-hide: false
+🖥️ 專案程式碼品質
+
+## <img src='/merage_error.png'/>
 
 ---
 
----
-
-layout: center
-class: text-center
+# Thank
 
 ---
-
-# Learn More
-
-[Documentations](https://sli.dev) · [GitHub](https://github.com/slidevjs/slidev) · [Showcases](https://sli.dev/showcases.html)
