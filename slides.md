@@ -119,7 +119,7 @@ flowchart LR
 - 📁**程式結構和管理**
 - 📥 **API 與 ws 呼叫架構**
 - 🧑‍💻 **組件狀態**
-- 🔋 **functional programming**
+- ⚔️ **FP 與 高階函數**
 - 🛠 **Service 化呼叫** -
 - 🪬 **專案中的設計模式** -
 - 🖥️ **專案程式碼品質** -
@@ -141,11 +141,12 @@ flowchart LR
 <div text-4xl m-auto h-full flex items-center>
 <div>📁程式結構和管理</div>
 </div>
+
 ---
 
 📁**程式結構和管理**
 
-挑戰：資料夾結構區分不明確
+🧨挑戰：資料夾結構區分不明確，造成維護與擴充不易
 
 <div>
     <img w-80 h-80 src="/p1.png"></img>
@@ -230,6 +231,138 @@ url
 ---
 
 <div text-4xl m-auto h-full flex items-center>
+<div>⚔️ FP 與 高階函數</div>
+</div>
+
+---
+
+### ⚔️ **FP 與 高階函數**
+
+## Functional Programming
+
+是一種編程方式，將函數視為一等公民，主要特點如下
+
+1. Pure Functions: 只要輸入相同參數， ALWAYS 輸出相同結果
+2. Immutability: 不可變物件，避免變動資料，
+3. Higher-Order-Function:函數可當作參數傳遞給其他函數，也能被返回為結果。'使函數更靈活的組合重用'
+4. Recursion:使用遞歸作為主要流程結構，而非遞迴
+
+---
+
+### ⚔️ **FP 與 高階函數**
+
+## 例子1 API Loading 動畫
+
+因為不一定每隻 API 都需要Loading 動畫，且每一隻 API 所對應的 Loading 功能可能不同，所以我們需要使用高階函數來定義 Loading 功能，再由各個 API 的函數來定義 Loading 的動畫，而不是寫死在API中
+
+```ts {all|1|2-4|5-20|all}
+const isLoading = ref(false)
+const { fetchCount, isFetchCountLoading } = useFetchCount()
+const { fetchUsers, isFetchUserLoading } = useUsers()
+const { fetchList, isFetchUserLoading } = useList()
+
+const handleCountBtn = () => {
+  isLoading.value = true
+  await fetchCount()
+  isLoading.value = false
+}
+const handleUsersBtn = () => {
+  isLoading.value = true
+  await fetchUsers()
+  isLoading.value = false
+}
+const handleListBtn = () => {
+  isLoading.value = true
+  await fetchList()
+  isLoading.value = false
+}
+```
+
+---
+
+### ⚔️ **FP 與 高階函數**
+
+```ts {all|1|2-4|5-20|all}
+const isLoading = ref(false)
+const { fetchCount, isFetchCountLoading } = useFetchCount()
+const { fetchUsers, isFetchUserLoading } = useUsers()
+const { fetchList, isFetchUserLoading } = useList()
+const loadingWith = promiseSurround(
+  (isLoading.value = true),
+  (isLoading = false)
+)
+
+const handleCountBtn = loadingWith(fetchCount)
+const handleUsersBtn = loadingWith(fetchUsers)
+const handleListBtn = loadingWith(fetchList)
+```
+
+---
+
+PM大大👩:UsersBtn 和 handleListBtn 增加確定視窗
+
+```vue {all|1-6|7-25}
+<template>
+  ...
+  <btn @click="handleUsersBtn">Users</btn>
+  <btn @click="handleListBtn">List</btn>
+  <Confirm v-model="isShowConfirm" @confirm="handleConfirm" />
+</template>
+<script>
+...
+const isShowConfirm = ref(false)
+const nowConfirmMode = ref<'users'|'list'>()
+const handleUsersBtn = ()=>{
+  isShowConfirm.value = true
+  nowConfirmMode.value = 'users'
+}
+const handleListBtn = ()=> {
+  isShowConfirm.value = true
+  nowConfirmMode.value = 'list'
+}
+const handleConfirm=()=>{
+  if(nowConfirmMode.value==='users'){
+    loadingWith(fetchUsers)()
+  }else{
+    loadingWith(fetchList)()
+  }
+}
+</script>
+```
+
+---
+
+```vue {all|1-6|7-25}
+<template>
+  ...
+  <btn @click="handleUsersBtn">Users</btn>
+  <btn @click="handleListBtn">List</btn>
+</template>
+<script>
+...
+const confirm = useConfirm()
+const handleUsersBtn = async()=>{
+  const r = await useConfirm().then(()=>true).catch(()=>false)
+  if(!r) return
+  loadingWith(fetchUsers)()
+}
+const handleListBtn = async ()=> {
+  const r = await useConfirm().then(()=>true).catch(()=>false)
+  if(!r) return
+  loadingWith(fetchList)()
+}
+</script>
+```
+
+Service 化
+
+1. 減少外部依賴狀態 (isConfirmShow,nowConfirmMode)
+2. 業務邏輯聚合在同一個函式當中，而非散落在template 與 好幾隻函數當中
+3. 用一個函式來處理所有的事情，而非分開成好幾種函式
+
+---
+
+<div text-4xl m-auto h-full flex items-center>
 <div>📥 API 與 WebSocket 呼叫架構</div>
 </div>
 
@@ -237,7 +370,7 @@ url
 
 📥 **API 與 ws 呼叫架構**
 
-挑戰：API呼叫與頁面強耦合
+🧨挑戰：API呼叫與頁面強耦合
 
 API呼叫散落在各個頁面，無法統一管理，且呼叫API邏輯與頁面強耦合
 
@@ -516,7 +649,7 @@ const descriptor = {
 
 # API使用
 
-useAccount.ts
+Account/List.ts
 
 ```ts {all|1-3|5-12}
 import useAssignCount from '@/service/api/botFeature/common/Chatroom/useAssignCount'
@@ -546,8 +679,8 @@ const handleFetchAssignCount = async () => {
 
 API架構優勢
 
-1. API 與 頁面解耦，頁面不需要執行try catch，不需要知道url 與 api使用方式等細節
-2. API動態驗證 ，ts只有靜態驗證，加入動態驗證補足
+1. API 與 頁面解耦，頁面不需要執行try catch，不需要知道url 與 api使用方式等細節，只要關注於使用
+2. API動態驗證 ，ts只有靜態驗證，加入動態驗證補足，快速找到問題
 3. 驗證 動態驗證與靜態驗證皆在該資料夾中，維護容易
 
 ---

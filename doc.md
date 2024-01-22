@@ -4,12 +4,6 @@
 
 # API 與 ws 呼叫架構
 
-# router middleware
-
-# 組件狀態
-
-# 表單驗證與資料動態檢查
-
 # FP
 
 # Service 化呼叫
