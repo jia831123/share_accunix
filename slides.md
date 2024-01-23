@@ -110,7 +110,7 @@ flowchart LR
 
 1. 資料夾結構區分不明確
 2. API呼叫與頁面強耦合：API散落在各個頁面，無法統一管理，且呼叫API邏輯與頁面強耦合
-3. 組件狀態依賴，除錯不易，且狀態追蹤困難
+3. 過多的if else ，擴充維護難度升高
 
 ---
 
@@ -297,6 +297,10 @@ const handleUsersBtn = loadingWith(fetchUsers)
 const handleListBtn = loadingWith(fetchList)
 ```
 
+1. 定義isLoading
+2. 定義fetch API
+3. 組合loadingWith
+
 ---
 
 PM大大👩:UsersBtn 和 handleListBtn 增加確定視窗
@@ -403,10 +407,10 @@ API呼叫散落在各個頁面，無法統一管理，且呼叫API邏輯與頁�
 | ├──api # api 資料夾，每隻檔案對應一支api  
 |-----├──index.ts
 |-----└──descriptor.ts //api 驗證文件
-| ├──store # pinia store
-| └──web-socket # webSocket 相關服務放置裡頭
-|-----├──index.ts
-|-----└──descriptor.ts //api 驗證文件
+|-├──store # pinia store
+|-└──web-socket # webSocket 相關服務放置裡頭
+|------├──index.ts
+|------└──descriptor.ts //api 驗證文件
 ```
 
 ---
@@ -695,9 +699,84 @@ API架構優勢
 
 🪬 **專案中的設計模式**
 
-1. 針對擴充時 if else 的替代方式-策略模式
+1. 針對同一組方法與變數，依據當下狀態不同，而有不同行為 - 狀態模式
 
-2. 針對 同一組方法與變數，依據當下狀態不同，而有不同行為 - 狀態模式
+2. 針對擴充時 if else 的替代方式-策略模式
+
+---
+
+🪬 **專案中的設計模式**
+
+> 狀態模式 ( State ) ，當一個物件的內在狀態改變時允許改變其行為，這個物件看起來像是改變了其類別。
+
+將行為用一個介面封裝起來，針對不同的狀態去改變其行為。
+
+<div grid grid-cols-2 gap-1>
+<div>
+  <img width='500' src='/game_module.png'/>
+</div>
+<ul>
+ <li>每一頁的上一部，下一步 儲存按鈕，顯示與否都不同</li>
+ <li>每一頁的步驟條狀態皆不同</li>
+ <li>每款遊戲上述狀態皆不同，目前總共有四款不同遊戲</li>
+ <li>每款遊戲不同步驟，所對應的組件也不同</li>
+ <oi>如果今天要新增一款新的遊戲....</oi>
+ <li text-red>在每個觸發點中，去新增一筆if else 的判斷，但隨著遊戲增多，複雜度也驟升</li>
+
+</ul>
+
+</div>
+
+---
+
+🪬 **專案中的設計模式**
+
+<div grid grid-cols-2 gap-1>
+<div>
+
+```ts {all|4-6|7-10|11-15|16-25|all}
+export interface State {
+  stepIndex: number
+  state: StepEnum
+  on: {
+    NEXT: StepEnum | null //下一步目標
+    PREV: StepEnum | null //上一步目標
+  }
+  main: {
+    containerType: StepEnum //主容器類型
+  }
+  step: {
+    title: string //步驟標題
+    active: StepEnum //當前步驟狀態
+    steps: { value: StepEnum; title: string }[] //步驟列表
+  }
+  footer: {
+    //footer
+    showNext: boolean
+    showPrev: boolean
+    showSave: boolean
+    showSaveDraft: boolean
+    showSaveActive: boolean
+    saveText: string
+  }
+}
+```
+
+</div>
+<div>
+
+- 每一個步驟皆為一種狀態
+
+- 每個遊戲包含多個步驟所組成的狀態列表
+
+- 使用者初始化對應遊戲的狀態
+
+- 進行步驟切換時，切換狀態，使定義好的方法與變數，以供選擇
+
+- 擴充容易，新增遊戲只要新增對應的一組新的狀態列即可
+
+</div>
+</div>
 
 ---
 
@@ -928,6 +1007,10 @@ flowchart TD
 
 ---
 
-# Thank
-
----
+<div h-full w-full flex items-center>
+<div >
+  <h2>
+  Thank
+  </h2>
+</div>
+</div>
